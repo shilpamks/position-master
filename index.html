@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Position Master Only Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 32px; background: #f6f8fb; color: #1f2937; }
+    .wrap { max-width: 900px; margin: 0 auto; }
+    .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    h1 { margin-top: 0; }
+    label { display:block; font-weight: 700; margin: 16px 0 8px; }
+    input[type=file] { width:100%; padding:10px; background:#f3f4f6; border-radius:10px; }
+    button { margin-top:20px; border:0; background:#2563eb; color:white; padding:12px 18px; border-radius:10px; font-size:16px; cursor:pointer; }
+    .note { background:#eff6ff; border-left:4px solid #2563eb; padding:12px 14px; margin:16px 0; border-radius:8px; }
+    .error { background:#fef2f2; border-left:4px solid #dc2626; padding:12px 14px; margin:16px 0; border-radius:8px; }
+    .success { background:#ecfdf5; border-left:4px solid #16a34a; padding:12px 14px; margin:16px 0; border-radius:8px; }
+    ul { margin-top: 8px; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>Position Master Matching Tool</h1>
+    <p>Upload one Position Master Excel file and up to {{ max_files }} staffing files. The output includes matched rows, review-needed rows, vacancies, role coverage, and allocation checks.</p>
+
+    <div class="note">
+      <strong>What this version improves</strong>
+      <ul>
+        <li>Fixes <code>Last, First Middle</code> names from Position Master.</li>
+        <li>Normalizes role labels like 1st / First Grade / 1, CC / Cross Cat, PE / Gym, and more.</li>
+        <li>Treats <code>OPEN</code> as a vacancy instead of a person.</li>
+        <li>Supports up to {{ max_files }} staffing files at once.</li>
+      </ul>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="{{ 'error' if category == 'error' else 'note' }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% if output_link %}
+      <div class="success">Done. <a href="{{ output_link }}">Download the Excel output</a>.</div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+      <label for="pm_file">Position Master Excel</label>
+      <input id="pm_file" type="file" name="pm_file" accept=".xlsx,.xls" required>
+
+      <label for="staffing_files">Staffing files (DOCX, PDF, or TXT, up to {{ max_files }})</label>
+      <input id="staffing_files" type="file" name="staffing_files" accept=".docx,.pdf,.txt" multiple required>
+
+      <button type="submit">Run Matching</button>
+    </form>
+  </div>
+</div>
+</body>
+</html>
